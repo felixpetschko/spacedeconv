@@ -2,7 +2,8 @@ test_that("every registered deconvolution method has a real test case", {
   expect_setequal(names(method_cases), unname(deconvolution_methods))
 })
 
-for (method in names(method_cases)) {
+# SPOTlight runs in test-spotlight.R so it can also be tested in isolation.
+for (method in setdiff(names(method_cases), "spotlight")) {
   test_that(paste("real deconvolution:", method), {
     local_test_state()
     withr::local_dir(withr::local_tempdir())
@@ -11,12 +12,12 @@ for (method in names(method_cases)) {
     if (!is.null(case$package)) skip_if_not_installed(case$package)
     if (isTRUE(case$licensed)) local_cibersort()
     if (isTRUE(case$reference)) {
-      fixture <- if (method == "spotlight") spotlight_fixture() else reference_mixture()
+      fixture <- reference_mixture()
       spe <- fixture$spe
       sce <- fixture$sce
       common <- list(single_cell_obj = sce, spatial_obj = spe, method = method,
         cell_type_col = "celltype", batch_id_col = "sample_id")
-      build_args <- if (method == "spotlight") list(maxIter = 200) else list()
+      build_args <- list()
       deconv_args <- case$args
       if (method == "cell2location") {
         skip_if_not(reticulate::py_module_available("cell2location"), "Python cell2location is not installed")
@@ -50,19 +51,4 @@ test_that("complete user workflow preserves data through plotting", {
   out <- aggregate_results(out, columns[1:2], name = "combined")
   expect_equal(out$combined, out[[columns[1]]] + out[[columns[2]]])
   expect_renderable(plot_spatial(out, "combined", density = FALSE))
-})
-
-test_that("SPOTlight accepts supplied markers and recovers known mixtures", {
-  local_test_state()
-  withr::local_dir(withr::local_tempdir())
-  fixture <- spotlight_fixture()
-  markers <- data.frame(gene = paste0("Gene", c(1:40, 301:340, 601:640)),
-    cluster = rep(c("A", "B", "C"), each = 40), mean.AUC = .95)
-  model <- build_model(fixture$sce, spatial_obj = fixture$spe,
-    cell_type_col = "celltype", method = "spotlight", markers = markers, maxIter = 200)
-  expect_true(all(c("mod", "topic") %in% names(model)))
-  result <- deconvolute(fixture$spe, signature = model, method = "spotlight", return_object = FALSE)
-  expect_method_result(result, fixture$spe, "spotlight")
-  fractions <- result[rownames(fixture$truth), paste0("spotlight_", colnames(fixture$truth)), drop = FALSE]
-  expect_gte(mean(max.col(fractions) == max.col(fixture$truth)), .8)
 })

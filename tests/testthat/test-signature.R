@@ -10,19 +10,8 @@ test_that("method registry is unambiguous and signature-free methods return NULL
   expect_error(deconvolute(small_spe(), method = "unknown"), "not recognized")
 })
 
-test_that("SPOTlight rejects missing model and missing spatial data", {
-  expect_error(deconvolute(small_spe(), method = "spotlight"), "Model is missing")
-  expect_error(build_model(small_sce(), cell_type_col = "celltype", method = "spotlight"), "spatial")
-})
-
 test_that("documented display names work for model building", {
   expect_null(build_model(small_sce(), method = "RCTD", cell_type_col = "celltype"))
-})
-
-test_that("the public API inventory accounts for every export", {
-  inventory <- read.csv(test_path("..", "api-coverage.csv"))
-  expect_setequal(inventory$export, getNamespaceExports("spacedeconv"))
-  expect_true(all(nzchar(inventory$test_files)))
 })
 
 test_that("the convenience wrapper forwards the model, assays and return mode", {

@@ -112,3 +112,8 @@ spotlight_fixture <- function() {
   fixture$spe <- fixture$spe[genes, ]
   fixture
 }
+
+spotlight_markers <- function() {
+  data.frame(gene = paste0("Gene", c(1:40, 301:340, 601:640)),
+    cluster = rep(c("A", "B", "C"), each = 40), mean.AUC = .95)
+}

@@ -72,7 +72,9 @@ first_gen <- c(
 #' @param batch_id_col Batch ID column in the single-cell object (used by some methods).
 #' @param assay_sc Single-cell assay to use (default: "counts").
 #' @param assay_sp Spatial assay to use (default: "counts").
-#' @param ... Additional parameters passed to the selected method.
+#' @param ... Additional parameters passed to the selected method. SPOTlight
+#' requires `markers`, a data frame with `gene`, `cluster` and `mean.AUC` columns;
+#' see [build_model_spotlight()].
 #'
 #' @return A cell-type signature matrix, or `NULL` for methods that build internally.
 #'
@@ -384,7 +386,8 @@ deconvolute <- function(spatial_obj, signature = NULL, single_cell_obj = NULL,
 #' @param return_object If `TRUE`, return an annotated `SpatialExperiment`;
 #' otherwise return the result matrix.
 #' @param verbose Print extra progress information.
-#' @param ... Additional parameters passed to the selected methods.
+#' @param ... Additional parameters passed to the selected methods. SPOTlight
+#' requires `markers`; see [build_model_spotlight()].
 #' @export
 build_and_deconvolute <- function(single_cell_obj, spatial_obj, method = NULL,
                                   cell_type_col = "cell_ontology_class",
