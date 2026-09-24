@@ -24,11 +24,11 @@ get_decoupleR_reference <- function(method = "progeny", organism = "human", n_ge
   }
 
   if (method == "progeny") {
-    reference <- decoupleR::get_progeny(organism = organism, top = n_genes, ...)
+    reference <- fetch_activity_reference("progeny", organism = organism, top = n_genes, ...)
   } else if (method == "dorothea") {
-    reference <- decoupleR::get_dorothea(organism = organism, ...) ############## missing parameters!
+    reference <- fetch_activity_reference("dorothea", organism = organism, ...) ############## missing parameters!
   } else if (method == "collectri") {
-    reference <- decoupleR::get_collectri(organism = organism, ...)
+    reference <- fetch_activity_reference("collectri", organism = organism, ...)
   } else {
     reference <- NULL
     cli::cli_alert_danger("DecoupleR method not supported")
@@ -132,7 +132,8 @@ compute_activities <- function(spe, reference, method = "wmean", assay = "cpm", 
 
   df <- tidyr::pivot_wider(df, names_from = "source", values_from = "score", id_cols = "condition")
 
-  df$condition <- NULL # remove spot
+  df <- df[match(colnames(spe), df$condition), , drop = FALSE]
+  df$condition <- NULL # IDs have been aligned to the input spots
 
   # check if dorothea or progeny reference, for naming
   if ("p_value" %in% names(reference)) {
@@ -152,4 +153,12 @@ compute_activities <- function(spe, reference, method = "wmean", assay = "cpm", 
   cli::cli_progress_done()
 
   return(spe)
+}
+
+# Isolate the remote-data boundary so tests do not depend on a live service.
+fetch_activity_reference <- function(method, organism, ...) {
+  switch(method,
+    progeny = decoupleR::get_progeny(organism = organism, ...),
+    dorothea = decoupleR::get_dorothea(organism = organism, ...),
+    collectri = decoupleR::get_collectri(organism = organism, ...))
 }

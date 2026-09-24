@@ -69,45 +69,22 @@ addResultToObject <- function(spatial_obj, result) {
   }
 
   if (is.null(result)) {
-    stop("Parameter 'spatial_obj' is null or missing, but is required")
+    stop("Parameter 'result' is null or missing, but is required")
   }
 
-  # make cell type names unique
-  colnames(result) <- make.names(colnames(result))
-
-  # check if number of spots matches result, might not be the case for all methods
-  if (nrow(result) == ncol(spatial_obj)) {
-    # add to spatialExperiment interatively
-    for (celltype in colnames(result)) {
-      spatial_obj[[celltype]] <- result[, celltype]
-    }
-  } else {
-    # get the missing spots and input zero for them
-    message("While saving results: dimensions don't match")
-
-    # v1 shorter???
-    # v2 longer
-    v1 <- colnames(spatial_obj)
-    v2 <- rownames(result)
-
-    # get the ones from v1 missing in v2
-    missing <- v1[!v1 %in% v2]
-
-    # construct "missing data" and set all to NA
-    missing_mat <- matrix(data = NA, nrow = length(missing), ncol = ncol(result))
-    rownames(missing_mat) <- missing
-    colnames(missing_mat) <- colnames(result)
-
-    # construct full dataframe
-    full <- rbind(result, missing_mat)
-
-    # order accordingly
-    full <- full[order(match(rownames(full), rownames(result))), , drop = FALSE]
-
-    # add to object
-    for (celltype in colnames(full)) {
-      spatial_obj[[celltype]] <- full[, celltype]
-    }
+  result <- as.matrix(result)
+  ids <- rownames(result)
+  if (is.null(ids) || anyNA(ids) || anyDuplicated(ids)) {
+    stop("Result spot IDs must be present and unique")
+  }
+  if (any(!ids %in% colnames(spatial_obj))) {
+    stop("Result contains unknown spot IDs")
+  }
+  colnames(result) <- make.names(colnames(result), unique = TRUE)
+  # Match even when dimensions agree: backends may reorder or omit spots.
+  aligned <- result[match(colnames(spatial_obj), ids), , drop = FALSE]
+  for (celltype in colnames(aligned)) {
+    spatial_obj[[celltype]] <- unname(aligned[, celltype])
   }
 
   return(spatial_obj)

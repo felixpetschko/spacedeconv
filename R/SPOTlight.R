@@ -10,7 +10,8 @@
 #' @param assay_sp Spatial assay to use.
 #' @param markers Optional marker-gene data frame. If `NULL`, markers are
 #' computed from `single_cell_obj` using the authors' suggested approach.
-build_model_spotlight <- function(single_cell_obj, cell_type_col = "cell_ontology_class", spatial_obj, assay_sc = "counts", assay_sp = "counts", markers = NULL) {
+#' @param ... Additional training parameters passed to `SPOTlight::trainNMF()`.
+build_model_spotlight <- function(single_cell_obj, cell_type_col = "cell_ontology_class", spatial_obj, assay_sc = "counts", assay_sp = "counts", markers = NULL, ...) {
   if (is.null(single_cell_obj)) {
     stop("Parameter 'single_cell_obj' is null or missing, but is required")
   }
@@ -44,6 +45,7 @@ build_model_spotlight <- function(single_cell_obj, cell_type_col = "cell_ontolog
   }
 
   groups <- colData(single_cell_obj)[[cell_type_col]] # cell type vector
+  mgs <- markers
   if (is.null(markers)) {
     message("No markers provided, calculating markers based on the authors suggestion")
     mgs <- getMarkersSPOTlight(
@@ -59,7 +61,8 @@ build_model_spotlight <- function(single_cell_obj, cell_type_col = "cell_ontolog
     mgs = mgs,
     weight_id = "mean.AUC",
     slot_sc = assay_sc, # not sure about this one!
-    slot_sp = assay_sp
+    slot_sp = assay_sp,
+    ...
   )
 
   return(model)

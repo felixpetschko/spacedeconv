@@ -86,14 +86,14 @@ build_model <- function(single_cell_obj, cell_type_col = "cell_ontology_class", 
     stop("Parameter 'single_cell_obj' missing or null, but is required")
   }
 
-  # check if method null or not supported
-  if (is.null(method) || !(method %in% deconvolution_methods)) {
+  if (length(method) != 1L || is.na(method)) {
     stop("Parameter 'method' is null or not supported")
   }
-
-  # if got the methods name and not the token
   if (method %in% names(deconvolution_methods)) {
     method <- deconvolution_methods[[method]]
+  }
+  if (!method %in% deconvolution_methods) {
+    stop("Parameter 'method' is null or not supported")
   }
 
   # convert to sparse matrices

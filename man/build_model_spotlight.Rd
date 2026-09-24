@@ -10,10 +10,13 @@ build_model_spotlight(
   spatial_obj,
   assay_sc = "counts",
   assay_sp = "counts",
-  markers = NULL
+  markers = NULL,
+  ...
 )
 }
 \arguments{
+\item{...}{Additional training parameters passed to \code{SPOTlight::trainNMF()}.}
+
 \item{single_cell_obj}{\code{SingleCellExperiment}.}
 
 \item{cell_type_col}{Column with cell type labels.}

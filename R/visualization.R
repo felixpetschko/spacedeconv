@@ -601,14 +601,14 @@ plot_overview <- function(spe, sample_id = "sample01") {
     nUMI = colSums(counts(spe))
   ))
 
-  plot_ly(
+  plotly::plot_ly(
     data = df, x = ~pxl_col_in_fullres, y = ~pxl_row_in_fullres,
     type = "scatter", mode = "markers",
     marker = list(size = 4, color = ~nUMI, colorscale = "Viridis", colorbar = list(title = "nUMI")),
     text = ~ paste("Row:", pxl_row_in_fullres, "Col:", pxl_col_in_fullres),
     hoverinfo = "text"
   ) %>%
-    layout(
+    plotly::layout(
       title = "SpatialExperiment Overview",
       xaxis = list(title = "pxl_col_in_fullres"),
       yaxis = list(title = "pxl_row_in_fullres", autorange = "reversed", scaleanchor = "x", scaleratio = 1)

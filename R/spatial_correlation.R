@@ -115,7 +115,7 @@ spatialcorr <- function(spe,
   m <- as.matrix(colData(spe)[, selvar])
 
   cor_res <- cor.mtest(m)
-  r <- cor_res$uppCI # correlation
+  r <- stats::cor(m) # Correlation coefficients, not confidence limits.
   p <- cor_res$p # p-value
 
   # Correct for multiple testing

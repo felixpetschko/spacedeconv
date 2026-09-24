@@ -90,32 +90,32 @@ plot_scatter <- function(spe = NULL, value1, value2, spe1 = NULL, spe2 = NULL, l
   # Construct plot
   plot <- ggplot(df, aes(x = value1, y = value2)) +
     geom_point(color = dot_color, size = 2, alpha = point_alpha, shape = 16) +
-    geom_smooth(method = "lm", color = "red", se = FALSE) + # Regression line
+    ggplot2::geom_smooth(method = "lm", color = "red", se = FALSE) + # Regression line
     geom_abline(slope = 1, linetype = "dashed", col = "gray") +
     xlab(paste(value1)) +
     ylab(paste(value2)) +
-    theme_minimal(base_size = 14) +
-    theme(
-      plot.title = element_text(size = 16, face = "bold"),
-      axis.title = element_text(size = 14),
-      axis.text = element_text(size = 12)
+    ggplot2::theme_minimal(base_size = 14) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(size = 16, face = "bold"),
+      axis.title = ggplot2::element_text(size = 14),
+      axis.text = ggplot2::element_text(size = 12)
     ) +
-    ggtitle(title)
+    ggplot2::ggtitle(title)
 
   # Annotate with the correlation coefficient and p-value
-  plot <- plot + annotate("text", x = Inf, y = Inf, label = paste0("Corr: ", round(cor_value, 2), ", P val: ", format.pval(p_value, digits = 3)), hjust = 1.1, vjust = 1, color = "red", size = 5)
+  plot <- plot + ggplot2::annotate("text", x = Inf, y = Inf, label = paste0("Corr: ", round(cor_value, 2), ", P val: ", format.pval(p_value, digits = 3)), hjust = 1.1, vjust = 1, color = "red", size = 5)
 
   # Apply log scale if log_scale is TRUE
   if (log_scale) {
-    plot <- plot + scale_x_log10() + scale_y_log10()
+    plot <- plot + ggplot2::scale_x_log10() + ggplot2::scale_y_log10()
   }
 
   # If fix_coords is TRUE, apply coord_fixed or coord_cartesian based on whether coord_range is specified
   if (fix_coords) {
     if (!is.null(coord_range) && length(coord_range) == 2) {
-      plot <- plot + coord_cartesian(xlim = coord_range, ylim = coord_range)
+      plot <- plot + ggplot2::coord_cartesian(xlim = coord_range, ylim = coord_range)
     } else {
-      plot <- plot + coord_fixed(ratio = 1)
+      plot <- plot + ggplot2::coord_fixed(ratio = 1)
     }
   }
 
