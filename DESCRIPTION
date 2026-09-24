@@ -77,7 +77,8 @@ Imports:
     org.Mm.eg.db, 
     org.Hs.eg.db, 
     AnnotationDbi, 
-    pbapply
+    pbapply,
+    withr
 Remotes:
     omnideconv/immunedeconv,
     dmcable/spacexr,
@@ -86,8 +87,6 @@ Remotes:
     YingMa0107/CARD@2d64b91abb5cdd0c7f576b1c5d4727c84e7c93a0,
     drighelli/SpatialExperiment, 
     dviraran/xCell, 
-Suggests:
-    withr
 Config/testthat/edition: 3
 Config/reticulate: 
   list(

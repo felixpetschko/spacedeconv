@@ -44,6 +44,7 @@ dependencies:
   - r-uuid
   - r-knitr
   - r-testthat
+  - r-withr
   - r-tidyr
   - r-xcell
   - r-markdown
