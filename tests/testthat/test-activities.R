@@ -52,3 +52,42 @@ test_that("reference retrieval forwards selection and filters confidence", {
   expect_warning(get_decoupleR_reference("collectri", confidence = "A"), "does not use")
   expect_equal(calls[[3]]$method, "collectri")
 })
+
+test_that("custom weight references produce named and aligned activity scores", {
+  local_test_state()
+  spe <- normalize(activity_spe())
+  ref <- data.frame(source = rep(c("A", "B"), each = 10),
+    target = paste0("G", 1:20), weight = 1)
+  out <- compute_activities(spe, ref, method = "ulm")
+  expect_preserved(out, spe)
+  expect_setequal(setdiff(names(colData(out)), names(colData(spe))),
+    c("decoupleR_A", "decoupleR_B"))
+  expect_true(all(is.finite(c(out$decoupleR_A, out$decoupleR_B))))
+  expect_gt(mean(out$decoupleR_A[1:4]), mean(out$decoupleR_A[5:8]))
+  expect_gt(mean(out$decoupleR_B[5:8]), mean(out$decoupleR_B[1:4]))
+
+  # The weight and mor column formats must give the same scores.
+  names(ref)[names(ref) == "weight"] <- "mor"
+  signed <- compute_activities(spe, ref, method = "ulm")
+  expect_equal(out$decoupleR_A, signed$collectri_A)
+  expect_equal(out$decoupleR_B, signed$collectri_B)
+})
+
+test_that("custom reference weights retain their magnitude and sign", {
+  local_test_state()
+  spe <- activity_spe()
+  ref <- data.frame(source = "signature", target = paste0("G", c(11:15, 1:5)),
+    weight = c(-1, -2, -3, -4, -5, 2, 4, 6, 8, 10))
+  out <- compute_activities(spe, ref, method = "wmean", assay = "counts", statistic = "wmean")
+
+  # Check the raw weighted mean independently, in the input spot order.
+  mat <- as.matrix(assay(spe, "counts"))[ref$target, , drop = FALSE]
+  expected <- as.numeric(crossprod(ref$weight, mat) / sum(abs(ref$weight)))
+  expect_preserved(out, spe)
+  expect_equal(out$decoupleR_signature, expected)
+  expect_gt(mean(out$decoupleR_signature[1:4]), mean(out$decoupleR_signature[5:8]))
+
+  ref$weight <- -ref$weight
+  reversed <- compute_activities(spe, ref, method = "wmean", assay = "counts", statistic = "wmean")
+  expect_equal(reversed$decoupleR_signature, -expected)
+})
