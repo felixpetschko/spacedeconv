@@ -8,7 +8,15 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = FALSE, collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", error = FALSE)
+micromamba <- Sys.which("micromamba")
+if (!nzchar(micromamba)) {
+  stop("Building this vignette requires micromamba and the r-omnideconv environment with omnideconv and BayesPrism installed.")
+}
+# Share temporary input/output files between the two R processes.
+build_dir <- tempfile("spacedeconv-external-")
+dir.create(build_dir)
+knitr::opts_knit$set(root.dir = build_dir)
 ```
 
 This vignette shows how to import cell-type estimates obtained with external
@@ -25,8 +33,8 @@ Choose the minimal installation and install the dependencies for **BayesPrism**,
 which is the only deconvolution method used here. Keep spacedeconv in its own
 `spacedeconv-env` environment.
 
-The code below is intended to be run interactively in two separate R sessions,
-using the same working directory. It is not executed when building this vignette.
+The code below can be run interactively in two separate R sessions: one in
+`r-omnideconv` and one in `spacedeconv-env`, both using the same working directory.
 
 # Preparing the input files
 
@@ -58,7 +66,7 @@ For your own data, substitute the spatial object, reference, and annotation colu
 
 Activate the omnideconv environment in your terminal and start R:
 
-```{bash}
+```{bash, eval=FALSE}
 micromamba activate r-omnideconv
 R
 ```
@@ -72,12 +80,13 @@ This example reads `spatial_counts.rds` (a gene-by-spot count matrix) and
 `single_cell_reference.rds` (a `SingleCellExperiment` with a `counts` assay and
 `celltype_major` annotations).
 
-```{r omnideconv}
+```{r omnideconv, eval=FALSE}
 library(omnideconv)
 
 spatial_counts <- readRDS("spatial_counts.rds")
 reference <- readRDS("single_cell_reference.rds")
 
+set.seed(42) # BayesPrism uses random numbers
 fractions <- omnideconv::deconvolute(
   bulk_gene_expression = as.matrix(spatial_counts),
   single_cell_object = reference,
@@ -90,6 +99,24 @@ fractions <- omnideconv::deconvolute(
 saveRDS(fractions, "bayesprism_results.rds")
 ```
 
+```{r run_omnideconv, include=FALSE}
+# Execute exactly the displayed chunk, without loading omnideconv in this session.
+script <- file.path(build_dir, "omnideconv_step.R")
+log_file <- file.path(build_dir, "omnideconv.log")
+writeLines(knitr::knit_code$get("omnideconv"), script)
+status <- withr::with_envvar(
+  c(R_HOME = NA, R_LIBS = NA, R_LIBS_USER = NA, R_LIBS_SITE = NA,
+    RETICULATE_PYTHON = NA, RETICULATE_PYTHON_ENV = NA),
+  system2(micromamba,
+    c("run", "-n", "r-omnideconv", "Rscript", shQuote(script)),
+    stdout = log_file, stderr = log_file)
+)
+if (status != 0L || !file.exists("bayesprism_results.rds")) {
+  details <- paste(tail(readLines(log_file, warn = FALSE), 30), collapse = "\n")
+  stop("The omnideconv step failed. Check the r-omnideconv environment.\n", details)
+}
+```
+
 The result has spots as rows and cell types as columns. Spot IDs are retained
 for importing the results. Spatial coordinates are not used in this
 omnideconv call; they remain in the original spatial object. Method suitability
@@ -99,7 +126,7 @@ for sparse spot data should be assessed for the dataset being analyzed.
 
 Switch environments and start a new R session:
 
-```{bash}
+```{bash, eval=FALSE}
 micromamba activate spacedeconv-env
 R
 ```

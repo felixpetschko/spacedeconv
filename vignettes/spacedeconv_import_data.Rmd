@@ -20,10 +20,6 @@ Other common single-cell formats are `anndata` and `Seurat`.
 This vignette shows how to use `H5AD` `anndata` files and `Seurat` objects
 as input for the spacedeconv pipeline.
 
-To import cell-type estimates computed by another tool, see
-[Importing external deconvolution results](spacedeconv_import_deconvolution_results.html),
-which demonstrates an omnideconv workflow.
-
 For `anndata`, we use the `zellkonverter` package which is also available via `conda`.
 
 Here, we set up `reticulate` before loading the `spacedeconv` and `zellkonverter` libraries to avoid
