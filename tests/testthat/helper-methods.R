@@ -10,6 +10,7 @@ method_cases <- list(
   rctd = list(reference = TRUE, args = list(n_cores = 1)),
   spotlight = list(reference = TRUE), card = list(reference = TRUE, package = "MuSiC"),
   spatialdwls = list(reference = TRUE),
+  rectangle = list(reference = TRUE),
   cell2location = list(reference = TRUE), dot = list(reference = TRUE, package = "DOTr"))
 
 reference_mixture <- function() {

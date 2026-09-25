@@ -2,8 +2,8 @@ test_that("every registered deconvolution method has a real test case", {
   expect_setequal(names(method_cases), unname(deconvolution_methods))
 })
 
-# SPOTlight runs in test-spotlight.R so it can also be tested in isolation.
-for (method in setdiff(names(method_cases), "spotlight")) {
+# SPOTlight and Rectangle have dedicated files so they can be tested in isolation.
+for (method in setdiff(names(method_cases), c("spotlight", "rectangle"))) {
   test_that(paste("real deconvolution:", method), {
     local_test_state()
     withr::local_dir(withr::local_tempdir())

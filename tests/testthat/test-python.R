@@ -8,4 +8,5 @@ test_that("configured Python environment provides required modules", {
   expect_true(reticulate::py_module_available("community")) # python louvain
   expect_true(reticulate::py_module_available("sklearn"))
   expect_true(reticulate::py_module_available("scanpy"))
+  expect_true(reticulate::py_module_available("rectanglepy"))
 })
