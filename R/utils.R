@@ -59,6 +59,62 @@ checkCol <- function(object, column) {
   return(column %in% names(SingleCellExperiment::colData(object)))
 }
 
+#' Import External Deconvolution Results
+#'
+#' Adds externally computed cell-type estimates to an existing SpatialExperiment.
+#' Rows are aligned by spot ID. Values are preserved without normalization;
+#' expression data, spatial coordinates, and images are unchanged.
+#'
+#' @param spe A `SpatialExperiment` with unique, non-empty spot IDs.
+#' @param results A numeric matrix or data frame with spots as rows and cell types
+#' as columns. Row names must match all `colnames(spe)` exactly, in any order.
+#' Values must be finite and non-negative; they need not sum to one.
+#' @param result_name A prefix identifying the external result, for example
+#' `"omnideconv_bayesprism"`. Use a syntactically valid R name starting with a
+#' letter. The names `"expression"` and `"cluster"` are reserved.
+#' @return The updated `SpatialExperiment`. Results are stored in `colData` as
+#' `<result_name>_<cell_type>`, with cell-type names converted using `make.names()`.
+#' Ambiguous names and collisions with existing columns are rejected.
+#' Use `result_name` with `available_results()`, `plot_spatial()`,
+#' and `cluster()` to select the imported result group.
+#' @export
+import_deconvolution_results <- function(spe, results, result_name) {
+  if (!is(spe, "SpatialExperiment")) {
+    stop("spe must be a SpatialExperiment.", call. = FALSE)
+  }
+  if (!is.character(result_name) || length(result_name) != 1L || is.na(result_name) ||
+      !grepl("^[A-Za-z][A-Za-z0-9._]*$", result_name) ||
+      make.names(result_name) != result_name || result_name %in% c("expression", "cluster")) {
+    stop("result_name must be a valid R name starting with a letter, other than 'expression' or 'cluster'.", call. = FALSE)
+  }
+  if (!(is.matrix(results) || is.data.frame(results)) ||
+      nrow(results) == 0L || ncol(results) == 0L) {
+    stop("results must be a non-empty matrix or data frame (rows = spots, columns = cell types).", call. = FALSE)
+  }
+  results <- as.matrix(results)
+  if (!is.numeric(results) || any(!is.finite(results)) || any(results < 0)) {
+    stop("results must contain finite, non-negative numeric values.", call. = FALSE)
+  }
+  valid_names <- function(x) {
+    !is.null(x) && !anyNA(x) && all(nzchar(trimws(x))) && !anyDuplicated(x)
+  }
+  if (!valid_names(colnames(spe)) || !valid_names(rownames(results)) ||
+      !setequal(rownames(results), colnames(spe))) {
+    stop("Result row names must match all unique, non-empty spot IDs in spe exactly.", call. = FALSE)
+  }
+  cell_types <- colnames(results)
+  if (!valid_names(cell_types) || anyDuplicated(make.names(cell_types))) {
+    stop("Cell-type column names must be non-empty and unique, including after make.names() conversion.", call. = FALSE)
+  }
+  colnames(results) <- paste0(result_name, "_", make.names(cell_types))
+  collisions <- intersect(colnames(results), names(colData(spe)))
+  if (length(collisions) > 0L) {
+    stop(paste("Result columns already exist:", paste(collisions, collapse = ", ")),
+      call. = FALSE)
+  }
+  addResultToObject(spe, results)
+}
+
 #' Add results to object colData
 #'
 #' @param spatial_obj SpatialExperiment
@@ -228,7 +284,8 @@ attachToken <- function(deconvolution, token = "deconv") {
 #' @param deconv A `SpatialExperiment` containing deconvolution results.
 #' @param method Optional prefix used to filter result columns (typically the
 #' internal method token from `spacedeconv::deconvolution_methods`, or a custom
-#' `result_name` used when running a method).
+#' `result_name` used when running or importing a method). Prefixes are matched
+#' at the underscore separating the method name from the result name.
 #'
 #' @export
 available_results <- function(deconv, method = NULL) {
@@ -238,7 +295,7 @@ available_results <- function(deconv, method = NULL) {
     res <- res[!res %in% c("in_tissue", "sample_id", "array_col", "array_row", "pxl_col_in_fullres", "pxl_row_in_fullres")]
 
     if (!is.null(method)) {
-      res <- res[startsWith(res, method)]
+      res <- res[startsWith(res, paste0(sub("_$", "", method), "_"))]
     }
   } else {
     print("Please provide a SpatialExperiment")

@@ -22,7 +22,7 @@ test_that("spatial plots use the expected values and can be rendered", {
   built <- plotly::plotly_build(p)
   expect_equal(as.numeric(built$x$data[[1]]$x), unname(spatialCoords(spe)[, 1]))
   expect_equal(as.numeric(built$x$data[[1]]$marker$color), unname(colSums(assay(spe))))
-  expect_error(plot_spatial(spe, result = "absent"), "not present")
+  expect_error(plot_spatial(spe, result = "absent"), "No result columns")
 })
 
 test_that("scatter and signature comparisons align by IDs rather than position", {
