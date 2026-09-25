@@ -152,7 +152,7 @@ The current method selection balances coverage of different cell-type quantifica
 approaches, published validation, and the feasibility of integration, installation,
 and maintenance. Users can propose additional methods through GitHub issues,
 providing links to their publication and implementation. Results from external
-deconvolution tools can also be imported with `import_deconvolution_results()` for
+deconvolution tools can also be imported for
 downstream analysis and visualization, as demonstrated in the
 [external deconvolution results vignette](vignettes/spacedeconv_import_deconvolution_results.Rmd).
 
