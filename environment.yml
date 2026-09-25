@@ -59,6 +59,9 @@ dependencies:
   - r-rcpparmadillo
   - r-mcmcpack
   - r-fields
+  - r-fnn
+  - r-matrix
+  - r-stringr
   - r-concaveman
   - r-sp
   - r-dplyr

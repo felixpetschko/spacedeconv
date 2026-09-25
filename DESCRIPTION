@@ -19,6 +19,7 @@ Depends:
 Imports:
     Giotto,
     CARD,
+    DOTr,
     utils,
     methods,
     remotes,
@@ -80,6 +81,7 @@ Imports:
     pbapply,
     withr
 Remotes:
+    saezlab/DOT,
     omnideconv/immunedeconv,
     dmcable/spacexr,
     drieslab/Giotto@v3.3.2,
