@@ -133,7 +133,7 @@ plot_spatial <- function(spe, result = NULL, palette = "Mako", transform_scale =
 
   # if a method is passed then make grid, otherwise, only one
   if (length(selected_results) > 1L) {
-    plot <- make_baseplot(spe, df,
+    plot <- patchwork::wrap_plots(make_baseplot(spe, df,
       palette = palette,
       to_plot = selected_results[1], sample_id = sample_id,
       image_id = image_id, show_image = show_image, background = background, zoom = zoom,
@@ -144,7 +144,7 @@ plot_spatial <- function(spe, result = NULL, palette = "Mako", transform_scale =
       title_size = title_size, font_size = font_size, legend_size = legend_size,
       density = density, save = save, path = path, png_width = png_width,
       png_height = png_height, show_legend = show_legend, ...
-    )
+    ))
 
     for (result in selected_results[-1]) {
       plot <- plot + make_baseplot(spe, df,

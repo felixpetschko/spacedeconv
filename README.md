@@ -13,7 +13,7 @@ _spacedeconv_ is a unified interface to first- and second-generation deconvoluti
 
 Since many different packages need to be included, we highly recommend to install _spacedeconv_ in a new Conda environment with the following commands.
 
-First, a tool for fast dependency resolution is needed, therefore we recommend installing [micromamba]("https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html") (or mamba / conda with libmamba solver) if not already available:
+First, a tool for fast dependency resolution is needed, therefore we recommend installing [micromamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html) (or mamba / conda with libmamba solver) if not already available:
 
 ```r
 "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
