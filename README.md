@@ -148,6 +148,14 @@ plot_spatial(
 
 ## Available methods, Licenses, Citations
 
+The current method selection balances coverage of different cell-type quantification
+approaches, published validation, and the feasibility of integration, installation,
+and maintenance. Users can propose additional methods through GitHub issues,
+providing links to their publication and implementation. Results from external
+deconvolution tools can also be imported with `import_deconvolution_results()` for
+downstream analysis and visualization, as demonstrated in the
+[external deconvolution results vignette](vignettes/spacedeconv_import_deconvolution_results.Rmd).
+
 Note that, while _spacedeconv_ itself is free ([GPL
 3.0](https://github.com/omnideconv/omnideconv/blob/main/LICENSE)), you may
 need to obtain a license to use the individual methods. See the table
