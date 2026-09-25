@@ -29,6 +29,11 @@ cluster <- function(spe,
                     nclusters = 3,
                     pca_dim = seq(1, 30),
                     clusres = 0.5, ...) {
+  if ("data" %in% names(substitute(list(...)))[-1L]) {
+    stop("Argument 'data' is not supported. Use 'spmethod' to select the data to cluster.",
+         call. = FALSE)
+  }
+
   cli::cli_rule(left = "spacedeconv")
   cli::cli_progress_step("testing parameter", msg_done = "parameter OK")
 

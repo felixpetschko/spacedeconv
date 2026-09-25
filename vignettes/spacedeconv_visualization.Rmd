@@ -165,10 +165,14 @@ spacedeconv::plot_spatial(deconv,
 ```
 
 ### Aggregate cell types
-Aggregate cell types using the `aggregate` function. Internall the deconvolution results are summed up and get a new name. The aggregation can be visualized with all available plotting functions.
+Aggregate cell types using `aggregate_results()`. The selected deconvolution results are summed and stored under a new name. The aggregation can be visualized with all available plotting functions.
 
-```{r aggregation, eval=FALSE}
-spe <- aggregate(spe, cell_type_1, cell_type_2, newName)
+```{r aggregation}
+deconv <- spacedeconv::aggregate_results(
+  deconv,
+  cell_types = c("spatialdwls_Cancer.Epithelial", "spatialdwls_Normal.Epithelial"),
+  name = "spatialdwls_Epithelial"
+)
 ```
 
 

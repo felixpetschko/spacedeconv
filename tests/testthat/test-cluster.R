@@ -1,3 +1,12 @@
+test_that("cluster rejects the obsolete data argument instead of ignoring it", {
+  spe <- result_spe()
+  for (value in c("expression", "progeny")) {
+    expect_error(cluster(spe, data = value), "Use 'spmethod'", fixed = TRUE)
+  }
+  expect_error(cluster(spe, spmethod = "quantiseq", data = "progeny"),
+               "Use 'spmethod'", fixed = TRUE)
+})
+
 test_that("both result clustering methods recover separated groups", {
   local_test_state()
   spe <- result_spe()
