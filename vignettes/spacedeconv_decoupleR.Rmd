@@ -1,7 +1,6 @@
 ---
 title: "DecoupleR integration"
 output: html_document
-date: "2024-02-27"
 vignette: >
   %\VignetteIndexEntry{DecoupleR integration}
   %\VignetteEngine{knitr::knitr}
