@@ -154,7 +154,7 @@ and maintenance. Users can propose additional methods through GitHub issues,
 providing links to their publication and implementation. Results from external
 deconvolution tools can also be imported for
 downstream analysis and visualization, as demonstrated in the
-[external deconvolution results vignette](vignettes/spacedeconv_import_deconvolution_results.Rmd).
+[external deconvolution results vignette](https://felixpetschko.github.io/spacedeconv/articles/spacedeconv_import_deconvolution_results.html).
 
 Note that, while _spacedeconv_ itself is free ([GPL
 3.0](https://github.com/omnideconv/omnideconv/blob/main/LICENSE)), you may
