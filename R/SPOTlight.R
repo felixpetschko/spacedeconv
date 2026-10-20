@@ -118,6 +118,18 @@ deconvolute_spotlight <- function(spatial_obj, model = NULL, assay_sp = "counts"
   mod <- model$mod
   ref <- model$topic
 
+  # SPOTlight 1.6.3 passes its cell-type-by-topic reference directly to NNLS,
+  # although NNLS needs topics as rows and cell types as columns. Its output
+  # labels also come from reference rows rather than coefficient columns.
+  cell_types <- rownames(ref)
+  topics <- rownames(NMF::coef(mod))
+  if (is.null(cell_types) || is.null(topics) ||
+      anyDuplicated(cell_types) || !setequal(colnames(ref), topics)) {
+    stop("SPOTlight reference must have unique cell-type names and match the model topics.",
+         call. = FALSE)
+  }
+  ref <- t(ref[, topics, drop = FALSE])
+
   # deconvolute
   deconv <- SPOTlight::runDeconvolution(
     x = spatial_obj,
@@ -127,6 +139,7 @@ deconvolute_spotlight <- function(spatial_obj, model = NULL, assay_sp = "counts"
   )
 
   deconvolution <- deconv$mat
+  colnames(deconvolution) <- cell_types
 
   # attach method token
   deconvolution <- attachToken(deconvolution, result_name)

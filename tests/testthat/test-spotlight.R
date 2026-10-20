@@ -51,6 +51,9 @@ test_that("real deconvolution: spotlight", {
   withr::local_dir(withr::local_tempdir())
   local_test_device()
   fixture <- spotlight_fixture()
+  # First-seen cell types differ from alphabetical order. This produces a
+  # non-symmetric topic reference and exposes incorrect NNLS orientation.
+  fixture$sce <- fixture$sce[, c(21:30, 1:20)]
   model <- build_model(fixture$sce, spatial_obj = fixture$spe,
     cell_type_col = "celltype", method = "spotlight", markers = spotlight_markers(), maxIter = 200)
   expect_true(all(c("mod", "topic") %in% names(model)))
@@ -58,4 +61,9 @@ test_that("real deconvolution: spotlight", {
   expect_method_result(result, fixture$spe, "spotlight")
   fractions <- result[rownames(fixture$truth), paste0("spotlight_", colnames(fixture$truth)), drop = FALSE]
   expect_gte(mean(max.col(fractions) == max.col(fixture$truth)), .8)
+  reordered <- model
+  reordered$topic <- model$topic[c(3, 1, 2), c(2, 3, 1), drop = FALSE]
+  again <- deconvolute(fixture$spe, signature = reordered, method = "spotlight",
+                      return_object = FALSE)
+  expect_equal(again[, colnames(result), drop = FALSE], result, tolerance = 1e-8)
 })

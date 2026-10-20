@@ -100,7 +100,7 @@ dependencies:
   - bioconductor-complexheatmap
   - bioconductor-omnipathr # currently not available for R 4.4 at bioconda
   - bioconductor-dropletutils
-  - bioconductor-spotlight
+  - bioconductor-spotlight = 1.6.3
   - bioconductor-scuttle
   - bioconductor-orthology.eg.db
   - bioconductor-org.mm.eg.db
