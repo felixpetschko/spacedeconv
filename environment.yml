@@ -90,6 +90,7 @@ dependencies:
   - r-uwot
 
   # Bioconductor R packages
+  - bioconductor-toast = 1.16.0 # required by MuSiC for CARD
   - bioconductor-singlecellexperiment
   - bioconductor-spatialexperiment
   - bioconductor-summarizedexperiment
