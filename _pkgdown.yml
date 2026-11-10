@@ -38,6 +38,7 @@ reference:
       - plot_most_abundant
       - plot_comparison
       - plot_scatter
+      - plot_boxplot
       - plot_overview
   - title: Sample Data
     contents:
