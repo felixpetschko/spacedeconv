@@ -133,7 +133,8 @@ spatialcorr <- function(spe, column, cor_method = "pearson", categories = NULL,
       annotation_label = label_title, annotation_name_side = "top",
       annotation_name_rot = 0, annotation_name_gp = heading_gp)
   }
-  heatmap <- ComplexHeatmap::draw(do.call(ComplexHeatmap::Heatmap, args), merge_legends = TRUE)
+  heatmap <- ComplexHeatmap::draw(do.call(ComplexHeatmap::Heatmap, args),
+    merge_legends = TRUE, padding = grid::unit(c(2, 2, 2, 10), "mm"))
   invisible(list(corr = r, heatmap = heatmap, used_spots = spots[valid],
                  excluded_spots = spots[!valid], excluded_columns = excluded_columns))
 }
