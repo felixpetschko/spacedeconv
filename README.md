@@ -175,6 +175,8 @@ First-generation methods use predefined signatures or gene sets and are accessed
 
 “Originally developed for” indicates the method’s original application. Bulk methods are applied to spatial spots as individual samples in spacedeconv. Species entries describe the standard references available through spacedeconv. For reference-dependent methods, species support depends on a suitable annotated reference and compatible gene identifiers.
 
+All methods can run on CPUs; for cell2location, GPU acceleration is supported and recommended. Memory requirements depend on the method and dataset size, including the numbers of spots, genes, and reference cells.
+
 | Method | Generation | Originally developed for | Species | License | Citation |
 |---|---|---|---|---|---|
 | [MCP-counter](https://github.com/ebecht/MCPcounter) | First | Bulk | Human | [GPL-3.0](https://github.com/ebecht/MCPcounter/blob/master/Source/License) | Becht E. et al. Estimating the population abundance of tissue-infiltrating immune and stromal cell populations using gene expression. Genome Biology 17, 218 (2016). <https://doi.org/10.1186/s13059-016-1070-5> |
