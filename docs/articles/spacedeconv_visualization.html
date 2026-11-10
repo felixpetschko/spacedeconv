@@ -35,7 +35,7 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
+<li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/spacedeconv_clustering.html">Clustering</a></li>
@@ -309,12 +309,23 @@ as a png.</p>
 <div class="section level4">
 <h4 id="aggregate-cell-types">Aggregate cell types<a class="anchor" aria-label="anchor" href="#aggregate-cell-types"></a>
 </h4>
-<p>Aggregate cell types using the <code>aggregate</code> function.
-Internall the deconvolution results are summed up and get a new name.
+<p>Aggregate cell types using <code><a href="../reference/aggregate_results.html">aggregate_results()</a></code>. The
+selected deconvolution results are summed and stored under a new name.
 The aggregation can be visualized with all available plotting
 functions.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">spe</span>, <span class="va">cell_type_1</span>, <span class="va">cell_type_2</span>, <span class="va">newName</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">deconv</span> <span class="op">&lt;-</span> <span class="fu">spacedeconv</span><span class="fu">::</span><span class="fu"><a href="../reference/aggregate_results.html">aggregate_results</a></span><span class="op">(</span></span>
+<span>  <span class="va">deconv</span>,</span>
+<span>  cell_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spatialdwls_Cancer.Epithelial"</span>, <span class="st">"spatialdwls_Normal.Epithelial"</span><span class="op">)</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"spatialdwls_Epithelial"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## ── spacedeconv ─────────────────────────────────────────────────────────────────</span></span></code></pre>
+<pre><code><span><span class="co">## ℹ testing parameter</span></span></code></pre>
+<pre><code><span><span class="co">## ✔ parameter OK [7ms]</span></span></code></pre>
+<pre><code><span><span class="co">## </span></span></code></pre>
+<pre><code><span><span class="co">## ℹ Aggregating cell types</span></span></code></pre>
+<pre><code><span><span class="co">## ✔ Aggregated cell types [8ms]</span></span></code></pre>
+<pre><code><span><span class="co">## </span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -344,6 +355,85 @@ how to scale the color´</li>
 <li>
 <code>title</code> set a custom title</li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="comparing-results">Comparing results<a class="anchor" aria-label="anchor" href="#comparing-results"></a>
+</h2>
+<p>The following examples reuse the slide and single-cell reference
+above. Add CARD results to compare two methods using the same cell-type
+annotations.</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">deconv</span> <span class="op">&lt;-</span> <span class="fu">spacedeconv</span><span class="fu">::</span><span class="fu"><a href="../reference/deconvolute.html">deconvolute</a></span><span class="op">(</span></span>
+<span>  spatial_obj <span class="op">=</span> <span class="va">deconv</span>,</span>
+<span>  single_cell_obj <span class="op">=</span> <span class="va">single_cell_data_3</span>,</span>
+<span>  cell_type_col <span class="op">=</span> <span class="st">"celltype_major"</span>,</span>
+<span>  batch_id_col <span class="op">=</span> <span class="st">"orig.ident"</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"card"</span>,</span>
+<span>  assay_sc <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  assay_sp <span class="op">=</span> <span class="st">"counts"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## ## QC on scRNASeq dataset! ...</span></span>
+<span><span class="co">## No cell types selected, we will use all the cell types in the scRNA-seq data</span></span>
+<span><span class="co">## ## QC on spatially-resolved dataset! ...</span></span>
+<span><span class="co">## ## create reference matrix from scRNASeq...</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in asMethod(object): sparse-&gt;dense coercion: allocating vector of size</span></span>
+<span><span class="co">## 1.4 GiB</span></span></code></pre>
+<pre><code><span><span class="co">## ## Select Informative Genes! ...</span></span>
+<span><span class="co">## ## Deconvolution Starts! ...</span></span>
+<span><span class="co">## ## Deconvolution Finish! ...</span></span></code></pre>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">column</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spatialdwls_B.cells"</span>, <span class="st">"card_B.cells"</span>,</span>
+<span>            <span class="st">"spatialdwls_CAFs"</span>, <span class="st">"card_CAFs"</span>,</span>
+<span>            <span class="st">"spatialdwls_Endothelial"</span>, <span class="st">"card_Endothelial"</span><span class="op">)</span></span>
+<span><span class="va">cell_types</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B cells"</span>, <span class="st">"CAFs"</span>, <span class="st">"Endothelial"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, <span class="va">column</span><span class="op">)</span></span>
+<span><span class="va">methods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spatialDWLS"</span>, <span class="st">"CARD"</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>, <span class="va">column</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="correlation-heatmap">Correlation heatmap<a class="anchor" aria-label="anchor" href="#correlation-heatmap"></a>
+</h3>
+<p><code><a href="../reference/spatialcorr.html">spatialcorr()</a></code> compares the spatial patterns of selected
+columns using Pearson correlation by default. A high correlation
+indicates similar patterns across spots, but does not imply agreement in
+absolute abundance.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">spacedeconv</span><span class="fu">::</span><span class="fu"><a href="../reference/spatialcorr.html">spatialcorr</a></span><span class="op">(</span></span>
+<span>  <span class="va">deconv</span>, column <span class="op">=</span> <span class="va">column</span>, categories <span class="op">=</span> <span class="va">cell_types</span>,</span>
+<span>  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">methods</span>, <span class="va">cell_types</span>, sep <span class="op">=</span> <span class="st">" | "</span><span class="op">)</span>, <span class="va">column</span><span class="op">)</span>,</span>
+<span>  label_title <span class="op">=</span> <span class="st">"Method | Cell type"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Correlation of cell-type estimates"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="spacedeconv_visualization_files/figure-html/comparison-heatmap-1.png" width="960"></p>
+</div>
+<div class="section level3">
+<h3 id="pairwise-scatterplot">Pairwise scatterplot<a class="anchor" aria-label="anchor" href="#pairwise-scatterplot"></a>
+</h3>
+<p><code><a href="../reference/plot_scatter.html">plot_scatter()</a></code> compares two columns spot by spot. The
+solid line shows the linear fit; the dashed line indicates equal values.
+Axis labels and titles can be customized, including for other numeric
+annotations such as activity scores.</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">spacedeconv</span><span class="fu">::</span><span class="fu"><a href="../reference/plot_scatter.html">plot_scatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">deconv</span>, value1 <span class="op">=</span> <span class="st">"spatialdwls_CAFs"</span>, value2 <span class="op">=</span> <span class="st">"card_CAFs"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"spatialDWLS"</span>, ylab <span class="op">=</span> <span class="st">"CARD"</span>, title <span class="op">=</span> <span class="st">"CAF relative abundance"</span>,</span>
+<span>  fix_coords <span class="op">=</span> <span class="cn">TRUE</span>, coord_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, point_alpha <span class="op">=</span> <span class="fl">0.3</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## `geom_smooth()` using formula = 'y ~ x'</span></span></code></pre>
+<p><img src="spacedeconv_visualization_files/figure-html/comparison-scatter-1.png" width="672"></p>
+</div>
+<div class="section level3">
+<h3 id="mean-abundance-across-methods">Mean abundance across methods<a class="anchor" aria-label="anchor" href="#mean-abundance-across-methods"></a>
+</h3>
+<p><code><a href="../reference/plot_boxplot.html">plot_boxplot()</a></code> shows one point per method and cell type,
+averaged across spots. The boxes summarize these method means, not
+variation across spots or confidence intervals. This small example uses
+two methods; additional methods can be added to the column and mapping
+vectors above.</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">spacedeconv</span><span class="fu">::</span><span class="fu"><a href="../reference/plot_boxplot.html">plot_boxplot</a></span><span class="op">(</span></span>
+<span>  <span class="va">deconv</span>, column <span class="op">=</span> <span class="va">column</span>, groups <span class="op">=</span> <span class="va">cell_types</span>, sources <span class="op">=</span> <span class="va">methods</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Mean cell-type abundance"</span>, ylab <span class="op">=</span> <span class="st">"Mean relative abundance"</span></span>
+<span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"Method"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="spacedeconv_visualization_files/figure-html/comparison-boxplot-1.png" width="864"></p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
