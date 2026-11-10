@@ -96,6 +96,24 @@ data("spatial_data_3")
 # data("spatial_data_4")
 ```
 
+Alternatively, load data from a repository such as Zenodo. Spatial data should be provided as a `SpatialExperiment`; for annotated single-cell reference data, we recommend `SingleCellExperiment`. The example below downloads the same `spatial_data_3` and `single_cell_data_3` objects from [Zenodo](https://doi.org/10.5281/zenodo.24108820) instead of loading them with `data()`.
+
+```r
+download.file(
+  "https://zenodo.org/records/24108820/files/spatial_data_3.RData?download=1",
+  destfile = "spatial_data_3.RData",
+  mode = "wb"
+)
+load("spatial_data_3.RData")
+
+download.file(
+  "https://zenodo.org/records/24108820/files/single_cell_data_3.RData?download=1",
+  destfile = "single_cell_data_3.RData",
+  mode = "wb"
+)
+load("single_cell_data_3.RData")
+```
+
 ### 2. Preprocessing
 
 Depending on the use case, certain preprocessing steps might be necessary.
