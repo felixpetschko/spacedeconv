@@ -1,16 +1,61 @@
-test_that("spatial correlations report coefficients rather than confidence limits", {
+test_that("spatial correlations preserve explicit order and support arbitrary numeric columns", {
   local_test_device()
   spe <- result_spe()
-  spe$quantiseq_C <- c(.1, .5, .2, .8, .3, .7)
-  x <- as.matrix(colData(spe)[, available_results(spe, "quantiseq")])
-  out <- spatialcorr(spe, "quantiseq")
-  expect_equal(out$corr, cor(x), tolerance = 1e-10)
-  p <- corrplot::cor.mtest(x)$p
-  expect_equal(out$padj[lower.tri(out$padj)], p.adjust(p[lower.tri(p)], "fdr"))
-  expect_equal(out$padj, t(out$padj))
-  expect_equal(unname(diag(out$padj)),  rep(0, 3))
-  expect_error(spatialcorr(spe, "absent"), "does not exist")
-  expect_error(spatialcorr(spe, "quantiseq", adjust = "bad"), "Invalid")
+  spe$activity <- c(-3, 1, 0, 8, 2, -1)
+  columns <- c("activity", "quantiseq_B", "quantiseq_A")
+  categories <- c(quantiseq_A = "Cells", activity = "Activity", quantiseq_B = "Cells")
+  labels <- c(quantiseq_B = "B", quantiseq_A = "A", activity = "TF")
+  for (method in c("pearson", "spearman", "kendall")) {
+    out <- spatialcorr(spe, columns, cor_method = method, categories = categories,
+      labels = labels, category_colors = c(Cells = "blue", Activity = "orange"),
+      row_names_gp = grid::gpar(fontsize = 8))
+    expect_equal(out$corr, cor(as.matrix(colData(spe)[, columns]), method = method))
+    expect_equal(ComplexHeatmap::row_order(out$heatmap), 1:3)
+    expect_equal(ComplexHeatmap::column_order(out$heatmap), 1:3)
+    expect_identical(out$heatmap@ht_list[[1]]@row_names_param$labels, c("TF", "B", "A"))
+    expect_identical(out$used_spots, colnames(spe))
+    expect_length(out$excluded_spots, 0)
+    expect_length(out$excluded_columns, 0)
+  }
+  out <- spatialcorr(spe, columns)
+  expect_s4_class(out$heatmap, "HeatmapList")
+  expect_null(out$padj)
+})
+
+test_that("spatial correlations report exclusions and use the same spots for every pair", {
+  local_test_device()
+  spe <- result_spe()
+  spe$activity <- c(NA, Inf, 2, 4, 1, 3)
+  spe$constant <- rep(0, 6)
+  columns <- c("quantiseq_A", "activity", "quantiseq_B", "constant")
+  warnings <- character()
+  out <- withCallingHandlers(spatialcorr(spe, columns), warning = function(w) {
+    warnings <<- c(warnings, conditionMessage(w))
+    invokeRestart("muffleWarning")
+  })
+  expect_length(warnings, 2)
+  expect_match(warnings[1], "2 spots")
+  expect_match(warnings[2], "constant")
+  expect_identical(out$excluded_spots, colnames(spe)[1:2])
+  expect_identical(out$used_spots, colnames(spe)[3:6])
+  expect_identical(out$excluded_columns, "constant")
+  expect_equal(out$corr, cor(as.matrix(colData(spe)[3:6, columns[1:3]])))
+  spe$activity <- c(1, rep(NA_real_, 5))
+  expect_error(suppressWarnings(spatialcorr(spe, columns)), "two complete spots")
+  expect_error(suppressWarnings(spatialcorr(spe, c("quantiseq_A", "constant"))), "two nonconstant")
+})
+
+test_that("spatial correlations reject invalid selections and ambiguous annotations", {
+  spe <- result_spe()
+  columns <- c("quantiseq_A", "quantiseq_B")
+  expect_error(spatialcorr(spe, c("missing", "quantiseq_A")), "do not exist")
+  expect_error(spatialcorr(spe, rep("quantiseq_A", 2)), "distinct")
+  expect_error(spatialcorr(spe, c("sample_id", "quantiseq_A")), "numeric")
+  expect_error(spatialcorr(spe, columns, categories = c("A", "B")), "named")
+  expect_error(spatialcorr(spe, columns, labels = c(quantiseq_A = "A")), "covering")
+  expect_error(spatialcorr(spe, columns, cluster_rows = TRUE), "Cannot override")
+  expect_error(spatialcorr(spe, columns, cor_method = "bad"), "arg")
+  expect_error(spatialcorr(spe, columns, category_colors = c(A = "red")), "requires categories")
 })
 
 test_that("expression correlation passes the correct values to its plot", {
@@ -25,4 +70,30 @@ test_that("expression correlation passes the correct values to its plot", {
   corr_expr(sig, log = TRUE)
   expect_equal(captured, cor(log1p(sig)))
   expect_error(corr_expr(sig, cor_method = "bad"), "cor_method")
+})
+
+test_that("custom row-label headings render and survive redrawing", {
+  local_test_device()
+  spe <- result_spe()
+  columns <- c("quantiseq_A", "quantiseq_B")
+  out <- spatialcorr(spe, columns, labels = c(quantiseq_A = "First", quantiseq_B = "Second"),
+    categories = c(quantiseq_A = "A", quantiseq_B = "B"), label_title = "Feature | Description")
+  expect_true(out$heatmap@ht_list[[1]]@right_annotation@anno_list[[1]]@name_param$show)
+  expect_no_error(ComplexHeatmap::draw(out$heatmap))
+  expect_equal(ComplexHeatmap::row_order(out$heatmap), 1:2)
+  expect_equal(out$corr, cor(as.matrix(colData(spe)[, columns])))
+  expect_error(spatialcorr(spe, columns, label_title = c("A", "B")), "single string")
+})
+
+test_that("row labels and their heading can be hidden independently", {
+  local_test_device()
+  spe <- result_spe()
+  columns <- c("quantiseq_A", "quantiseq_B")
+  no_heading <- spatialcorr(spe, columns, label_title = NULL)
+  expect_null(no_heading$heatmap@ht_list[[1]]@right_annotation)
+  expect_true(no_heading$heatmap@ht_list[[1]]@row_names_param$show)
+  hidden <- spatialcorr(spe, columns, show_row_names = FALSE)
+  expect_null(hidden$heatmap@ht_list[[1]]@right_annotation)
+  expect_false(hidden$heatmap@ht_list[[1]]@row_names_param$show)
+  expect_equal(hidden$corr, no_heading$corr)
 })
