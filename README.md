@@ -171,7 +171,11 @@ cite both our package and the method(s) you are using.
 
 > Constantin Zackl, Maria Zopoglou, Reto Stauffer, Markus Ausserhofer, Marieke E. Ijsselsteijn, Gregor Sturm, Noel Filipe da Cunha Carvalho de Miranda, Francesca Finotello. spacedeconv: deconvolution of tissue architecture from spatial transcriptomics, PREPRINT available at Research Square https://doi.org/10.21203/rs.3.rs-5102166/v1.
 
-| Method[^immunedeconv] | Generation[^generation] | Originally developed for[^origin] | Species[^species] | License | Citation |
+First-generation methods use predefined signatures or gene sets and are accessed through immunedeconv ([Sturm et al., 2019](https://doi.org/10.1093/bioinformatics/btz363); [Merotto et al., 2024](https://doi.org/10.1093/bioadv/vbae032) for mouse deconvolution). Please cite both immunedeconv and the original method. Second-generation methods use a user-provided annotated single-cell or single-nucleus reference.
+
+“Originally developed for” indicates the method’s original application. Bulk methods are applied to spatial spots as individual samples in spacedeconv. Species entries describe the standard references available through spacedeconv. For reference-dependent methods, species support depends on a suitable annotated reference and compatible gene identifiers.
+
+| Method | Generation | Originally developed for | Species | License | Citation |
 |---|---|---|---|---|---|
 | [MCP-counter](https://github.com/ebecht/MCPcounter) | First | Bulk | Human | [GPL-3.0](https://github.com/ebecht/MCPcounter/blob/master/Source/License) | Becht E. et al. Estimating the population abundance of tissue-infiltrating immune and stromal cell populations using gene expression. Genome Biology 17, 218 (2016). <https://doi.org/10.1186/s13059-016-1070-5> |
 | [EPIC](https://github.com/GfellerLab/EPIC) | First | Bulk | Human | [Academic / non-commercial](https://github.com/GfellerLab/EPIC/blob/master/LICENSE) | Racle J. et al. Simultaneous enumeration of cancer and immune cell types from bulk tumor gene expression data. eLife 6, e26476 (2017). <https://doi.org/10.7554/eLife.26476> |
@@ -194,11 +198,3 @@ cite both our package and the method(s) you are using.
 | [CARD](https://github.com/YingMa0107/CARD) | Second | Spatial | Reference-dependent | [GPL-3.0](https://github.com/YingMa0107/CARD/blob/master/LICENSE.md) | Ma Y., Zhou X. Spatially informed cell type deconvolution for spatial transcriptomics. Nature Biotechnology 40, 1349–1359 (2022). <https://doi.org/10.1038/s41587-022-01273-7> |
 | [DOT](https://github.com/saezlab/dot) | Second | Spatial / single-cell data integration | Reference-dependent | [GPL-3.0](https://github.com/saezlab/DOT/blob/main/LICENSE.md) | Rahimi A. et al. DOT: a flexible multi-objective optimization framework for transferring features across single-cell and spatial omics. Nature Communications 15, 4994 (2024). <https://www.nature.com/articles/s41467-024-48868-z> |
 | [Rectangle](https://github.com/ComputationalBiomedicineGroup/Rectangle) | Second | Bulk / spatial | Reference-dependent | [BSD-3-Clause OR Commercial](https://github.com/ComputationalBiomedicineGroup/Rectangle/blob/main/LICENSE) | Eder B, Rigato I, Dietrich A, Merotto L, Sturm G, Treis T, List M, Theis FJ, Finotello F. Rectangle: robust and scalable multiscale deconvolution informed by single-cell RNA sequencing data. bioRxiv. 2026. <https://doi.org/10.64898/2026.07.07.736950> |
-
-[^immunedeconv]: First-generation methods are accessed through [immunedeconv](https://omnideconv.org/immunedeconv/) ([Sturm et al., 2019](https://doi.org/10.1093/bioinformatics/btz363)). For mouse deconvolution, also cite [Merotto et al., 2024](https://doi.org/10.1093/bioadv/vbae032). Please cite both immunedeconv and the original method. Licenses refer to the individual methods; BASE is listed as free by immunedeconv without a separate license identifier.
-
-[^generation]: First-generation methods use predefined signatures or gene sets; second-generation methods use a user-provided annotated single-cell reference. Classification follows spacedeconv's method grouping.
-
-[^origin]: Original application of the method. Bulk methods are applied to spatial spots as individual samples in spacedeconv; this does not imply that their models use spatial coordinates.
-
-[^species]: First-generation entries describe the standard references available through spacedeconv. Reference-dependent methods require a suitable annotated single-cell or single-nucleus reference and compatible gene identifiers; this does not imply validation for every organism.
