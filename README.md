@@ -96,7 +96,7 @@ data("spatial_data_3")
 # data("spatial_data_4")
 ```
 
-Alternatively, load data from a repository such as Zenodo. Spatial data should be provided as a `SpatialExperiment`; for annotated single-cell reference data, we recommend `SingleCellExperiment`. The example below downloads the same `spatial_data_3` and `single_cell_data_3` objects from [Zenodo](https://doi.org/10.5281/zenodo.24108820) instead of loading them with `data()`.
+Alternatively, load data from a repository such as Zenodo. Spatial data should be provided as a `SpatialExperiment` and single-cell reference data as a `SingleCellExperiment`. The example below downloads the same `spatial_data_3` and `single_cell_data_3` objects from [Zenodo](https://doi.org/10.5281/zenodo.24108820) instead of loading them with `data()`.
 
 ```r
 download.file(
